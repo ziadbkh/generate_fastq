@@ -62,13 +62,11 @@ def get_all_possible_matches(index_ls, allowed_mismatches=1):
 
 
 def reverse_complement(seq):
-    """Return the reverse complement of a DNA sequence."""
     complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
     return ''.join(complement[base] for base in reversed(seq))
 
 
 def generate_random_sequence(length):
-    """Generate a random DNA sequence of given length."""
     return ''.join(random.choices('ACGT', k=length))
 
 
@@ -78,6 +76,8 @@ def generate_fastq(output_file, num_sequences, sequence_length, i7, i5, umi_len,
     i7s = list(get_all_possible_matches([i7], allowed_mismatches))
     i5s = list(get_all_possible_matches([i5], allowed_mismatches))
     qs = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHI'
+    #qs = ':;<=>?@ABCDEFGHI'
+    #qs = 'EFGHI'
     curr_umi = ""
     with gzip.open(f"{output_file}_R1.fastq.gz", 'wt', newline='') as f1:
         with gzip.open(f"{output_file}_R2.fastq.gz", 'wt', newline='') as f2:
@@ -91,7 +91,7 @@ def generate_fastq(output_file, num_sequences, sequence_length, i7, i5, umi_len,
                     i_out = i
 
                 f1.write(f"@FC01L1C001R001{'{:08d}'.format(i_out)}/1\n{sequence}\n+"\
-                        f"\n{''.join(random.choices(string.ascii_letters, k=sequence_length))}\n")
+                        f"\n{''.join(random.choices(qs, k=sequence_length))}\n")
 
                 f2.write(f"@FC01L1C001R001{'{:08d}'.format(i_out)}/2\n{sequence}{random.choice(i7s)}{curr_umi}{random.choice(i5s)}\n+"\
                         f"\n{''.join(random.choices(qs, k=sequence_length + len(i7) + umi_len + len(i5)))}\n")
